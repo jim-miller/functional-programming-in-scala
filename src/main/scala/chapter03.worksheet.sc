@@ -11,8 +11,13 @@ object List {
   }
 
   def tail[A](l: List[A]): List[A] = l match {
-    case Cons(h, t) => t
+    case Cons(_, _) => drop(l, 1)
     case _          => throw new UnsupportedOperationException
+  }
+
+  def drop[A](l: List[A], n: Int): List[A] = l match {
+    case Cons(h, t) => if (n > 1) drop(t, n - 1) else t
+    case _          => Nil
   }
 
   /** Replaces first element of a `List` with a different value.
@@ -54,7 +59,7 @@ val x = List(1, 2, 3, 4, 5) match {
    make in your implementation if the List is Nil? We’ll return to this
    question in the next chapter.
  */
-val l: List[Int] = Cons(1, Cons(2, Nil))
+val l: List[Int] = Cons(1, Cons(2, Cons(3, Nil)))
 List.tail(l)
 
 /* Exercise 3.3
@@ -64,3 +69,10 @@ List.tail(l)
  */
 List.setHead(2, l)
 
+/* Exercise 3.4
+ *
+ * Generalize tail to the function drop, which removes the first n elements from a list. Note that this function takes time proportional only to the number of elements being dropped—we don’t need to make a copy of the entire List.
+ */
+List.drop(l, 2)
+List.drop(l, 3)
+List.drop(l, 4)
