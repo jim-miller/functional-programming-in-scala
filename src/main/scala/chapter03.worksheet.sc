@@ -20,6 +20,11 @@ object List {
     case _          => Nil
   }
 
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
+    case Nil => Nil
+    case as@Cons(h, t) => if (f(h)) dropWhile(t, f) else as
+  }
+
   /** Replaces first element of a `List` with a different value.
     *
     * This does not work for empty (`Nil`) `List`s and will throw an
@@ -59,7 +64,7 @@ val x = List(1, 2, 3, 4, 5) match {
    make in your implementation if the List is Nil? We’ll return to this
    question in the next chapter.
  */
-val l: List[Int] = Cons(1, Cons(2, Cons(3, Nil)))
+val l: List[Int] = List(1, 2, 3)
 List.tail(l)
 
 /* Exercise 3.3
@@ -76,3 +81,10 @@ List.setHead(2, l)
 List.drop(l, 2)
 List.drop(l, 3)
 List.drop(l, 4)
+
+/* Exercise 3.5
+
+   Implement dropWhile, which removes elements from the List prefix as
+   long as they match a predicate.
+ */
+List.dropWhile(l, (n: Int) => n <= 2)
