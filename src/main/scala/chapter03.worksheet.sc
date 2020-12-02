@@ -21,8 +21,8 @@ object List {
   }
 
   def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
-    case Nil => Nil
-    case as@Cons(h, t) => if (f(h)) dropWhile(t, f) else as
+    case Nil             => Nil
+    case as @ Cons(h, t) => if (f(h)) dropWhile(t, f) else as
   }
 
   /** Replaces first element of a `List` with a different value.
@@ -37,6 +37,20 @@ object List {
   def setHead[A](a: A, l: List[A]): List[A] = l match {
     case Cons(_, t) => Cons(a, t)
     case _          => throw new UnsupportedOperationException
+  }
+
+  def init[A](l: List[A]): List[A] = {
+    def loop(acc: List[A], remain: List[A]): List[A] = remain match {
+      case Cons(_, Nil) | Nil => acc
+      case Cons(h, t)         => loop(Cons(h, acc), t)
+    }
+
+    def reverse(as: List[A], res: List[A] = Nil): List[A] = as match {
+      case Nil => res
+      case Cons(h, t) => reverse(t, Cons(h, res))
+    }
+
+    reverse(loop(Nil, l))
   }
 
   def apply[A](as: A*): List[A] = {
@@ -88,3 +102,13 @@ List.drop(l, 4)
    long as they match a predicate.
  */
 List.dropWhile(l, (n: Int) => n <= 2)
+
+/* Exercise 3.6
+
+   Not everything works out so nicely. Implement a function, init, that returns
+   a List consisting of all but the last element of a List. So, given
+   List(1,2,3,4), init will return List(1,2,3). Why can’t this function be
+   implemented in constant time like tail?
+ */
+assert(List.init(List(1, 2, 3)) == List(1, 2))
+
