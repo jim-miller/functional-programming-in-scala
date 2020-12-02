@@ -57,3 +57,10 @@ val x = List(1, 2, 3, 4, 5) match {
 val l: List[Int] = Cons(1, Cons(2, Nil))
 List.tail(l)
 
+/* Exercise 3.3
+
+   Using the same idea, implement the function setHead for replacing the first
+   first element of a List with a different value.
+ */
+List.setHead(2, l)
+
