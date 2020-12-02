@@ -8,3 +8,4 @@ project/plugins/project/
 .cache
 .lib/vscode/
 .bsp
+project/project/metals.sbt
