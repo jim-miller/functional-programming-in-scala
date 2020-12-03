@@ -13,9 +13,8 @@ object List {
     foldRight(as, Nil: List[A])(append)
   }
 
-  def filter[A](as: List[A])(f: A => Boolean): List[A] = as match {
-    case Nil        => Nil
-    case Cons(h, t) => if (f(h)) Cons(h, filter(t)(f)) else filter(t)(f)
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = {
+    flatMap(as)(a => if (f(a)) Cons(a, Nil) else Nil)
   }
 
   def map[A, B](as: List[A])(f: A => B): List[B] = {
@@ -299,3 +298,9 @@ filter(l)(_ % 2 != 0)
    List(1,1,2,2,3,3).
  */
 flatMap(List(1, 2, 3))(i => List(i, i))
+
+/* Exercise 3.21
+ *
+ * Use flatMap to implement filter.
+ */
+filter(List(1, 2, 3, 4, 5, 6))(_ % 2 == 0)
