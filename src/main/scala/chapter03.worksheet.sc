@@ -9,10 +9,14 @@ object List {
     foldRight(a1, a2)(Cons(_, _))
   }
 
-  def zip[A](l1: List[A], l2: List[A]): List[(A, A)] = (l1, l2) match {
+  def zip[A, B](l1: List[A], l2: List[B]): List[(A, B)] = (l1, l2) match {
     case (_, Nil)                     => Nil
     case (Nil, _)                     => Nil
     case (Cons(h1, t1), Cons(h2, t2)) => Cons((h1, h2), zip(t1, t2))
+  }
+
+  def zipWith[A, B](l1: List[A], l2: List[B])(f: (A, B) => B): List[B] = {
+    map(zip(l1, l2))(f.tupled)
   }
 
   def concat[A](as: List[List[A]]): List[A] = {
@@ -308,3 +312,10 @@ filter(List(1, 2, 3, 4, 5, 6))(_ % 2 == 0)
 val (l1, l2) = (List(1, 2, 3), List(4, 5, 6))
 zip(l1, l2)
 map(zip(l1, l2)) { case (l, r) => l + r }
+
+/* Exercise 3.23
+
+   Generalize the function you just wrote so that it's not specific to integers
+   or addition. Name your generalized function zipWith.
+ */
+zipWith(l1, l2)(_ * _)
