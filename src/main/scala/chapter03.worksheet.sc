@@ -9,6 +9,12 @@ object List {
     foldRight(a1, a2)(Cons(_, _))
   }
 
+  def zip[A](l1: List[A], l2: List[A]): List[(A, A)] = (l1, l2) match {
+    case (_, Nil)                     => Nil
+    case (Nil, _)                     => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons((h1, h2), zip(t1, t2))
+  }
+
   def concat[A](as: List[List[A]]): List[A] = {
     foldRight(as, Nil: List[A])(append)
   }
@@ -291,3 +297,14 @@ flatMap(List(1, 2, 3))(i => List(i, i))
  * Use flatMap to implement filter.
  */
 filter(List(1, 2, 3, 4, 5, 6))(_ % 2 == 0)
+
+/* Exercise 3.22
+
+   Write a function that accepts two lists and constructs a new list by adding
+   corresponding elements. For example, List(1,2,3) and List(4,5,6) become
+   List(5,7,9).
+ */
+
+val (l1, l2) = (List(1, 2, 3), List(4, 5, 6))
+zip(l1, l2)
+map(zip(l1, l2)) { case (l, r) => l + r }
