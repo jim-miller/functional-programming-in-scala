@@ -22,6 +22,10 @@ object List {
     foldRight(as, Nil: List[B])((a, l) => Cons(f(a), l))
   }
 
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = {
+    concat(map(as)(f))
+  }
+
   def tail[A](l: List[A]): List[A] = l match {
     case Cons(_, _) => drop(l, 1)
     case _          => throw new UnsupportedOperationException
@@ -275,10 +279,23 @@ doubleToString(List(3.14159, 2.71828))
  */
 map(l)(_ / 2.0)
 
-/* Exercise 3.14159
+/* Exercise 3.19
 
    Write a function filter that removes elements from a list unless
    they satisfy a given predicate. Use it to remove all odd numbers
    from a List[Int].
  */
 filter(l)(_ % 2 != 0)
+
+/* Exercise 3.20
+
+   Write a function flatMap that works like map except that the function
+   given will return a list instead of a single result, and that list should
+   be inserted into the final resulting list. Here is its signature:
+
+     def flatMap[A,B](as: List[A])(f: A => List[B]): List[B]
+
+   For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in
+   List(1,1,2,2,3,3).
+ */
+flatMap(List(1, 2, 3))(i => List(i, i))
