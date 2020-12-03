@@ -1,11 +1,13 @@
 import scala.annotation.tailrec
-// object FpInScala {
+
 sealed trait List[+A]
 case object Nil extends List[Nothing]
 case class Cons[+A](head: A, tail: List[A]) extends List[A]
-// }
 
 object List {
+  def append[A](a1: List[A], a2: List[A]): List[A] = {
+    foldRight(a1, a2)(Cons(_, _))
+  }
 
   def tail[A](l: List[A]): List[A] = l match {
     case Cons(_, _) => drop(l, 1)
@@ -214,3 +216,10 @@ List.reverse(l)
  */
 List.foldLeft(l, 0)(_ - _)
 List.foldRight(l, 0)(_ - _)
+
+/* Exercise 3.14
+
+   Implement append in terms of either foldLeft or foldRight.
+ */
+List.append(l, List(4, 5))
+List.append(List("a", "b", "c"), List("1", "2", "3"))
