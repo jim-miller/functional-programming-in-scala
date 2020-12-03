@@ -13,6 +13,10 @@ object List {
     foldRight(as, Nil: List[A])(append)
   }
 
+  def map[A, B](as: List[A])(f: A => B): List[B] = {
+    foldRight(as, Nil: List[B])((a, l) => Cons(f(a), l))
+  }
+
   def tail[A](l: List[A]): List[A] = l match {
     case Cons(_, _) => drop(l, 1)
     case _          => throw new UnsupportedOperationException
@@ -258,3 +262,10 @@ val doubleToString =
   foldRight(_: List[Double], Nil: List[String])((a, b) => Cons(a.toString, b))
 
 doubleToString(List(3.14159, 2.71828))
+
+/* Exercise 3.18
+ *
+ * Write a function map that generalizes modifying each element in a list
+ * while maintain- ing the structure of the list. Here is its signature:12
+ */
+map(l)(_ / 2.0)
