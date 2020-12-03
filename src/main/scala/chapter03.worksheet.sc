@@ -71,6 +71,10 @@ object List {
     loop(as, z)
   }
 
+  def reverse[A](as: List[A]): List[A] = {
+    foldLeft(as, Nil: List[A])((l, r) => Cons(r, l))
+  }
+
   def sum(ns: List[Int]) = foldLeft(ns, 0)(_ + _)
 
   def product(ns: List[Double]) = foldLeft(ns, 1.0)(_ * _)
@@ -191,3 +195,11 @@ List.foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
    Write sum, product, and a function to compute the length of a list
    using foldLeft.
  */
+
+/* Exercise 3.12
+
+   Write a function that returns the reverse of a list (given List(1,2,3) it
+   returns List(3,2,1)). See if you can write it using a fold.
+ */
+List.foldLeft(l, Nil: List[Int])((x, y) => Cons(y, x))
+List.reverse(l)
