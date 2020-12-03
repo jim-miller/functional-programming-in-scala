@@ -6,10 +6,6 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
 // }
 
 object List {
-  def sum[A](ints: List[Int]): Int = ints match {
-    case Nil        => 0
-    case Cons(h, t) => h + sum(t)
-  }
 
   def tail[A](l: List[A]): List[A] = l match {
     case Cons(_, _) => drop(l, 1)
@@ -75,11 +71,11 @@ object List {
     loop(as, z)
   }
 
-  def sum2(ns: List[Int]) = foldRight(ns, 0)(_ + _)
+  def sum(ns: List[Int]) = foldLeft(ns, 0)(_ + _)
 
-  def product2(ns: List[Double]) = foldRight(ns, 1.0)(_ * _)
+  def product(ns: List[Double]) = foldLeft(ns, 1.0)(_ * _)
 
-  def length[A](as: List[A]): Int = foldRight(as, 0)((_, z) => z + 1)
+  def length[A](as: List[A]): Int = foldLeft(as, 0)((z, _) => z + 1)
 
   def apply[A](as: A*): List[A] = {
     if (as.isEmpty) Nil else Cons(as.head, List(as.tail: _*))
@@ -178,14 +174,20 @@ List.foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
 List.length(List(1, 2, 3, 4, 5))
 
 /* Exercise 3.10
- *
- * Our implementation of foldRight is not tail-recursive and will result in a
- * StackOver- flowError for large lists (we say it’s not stack-safe).
- * Convince yourself that this is the case, and then write another general
- * list-recursion function, foldLeft, that is tail-recursive, using the
- * techniques we discussed in the previous chapter. Here is its signature
- *
- * def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B
+
+   Our implementation of foldRight is not tail-recursive and will result in a
+   StackOver- flowError for large lists (we say it’s not stack-safe).
+   Convince yourself that this is the case, and then write another general
+   list-recursion function, foldLeft, that is tail-recursive, using the
+   techniques we discussed in the previous chapter. Here is its signature
+
+   def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B
  */
 List.foldLeft(l, 1)(_ * _)
 List.foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
+
+/* Exercise 3.11
+
+   Write sum, product, and a function to compute the length of a list
+   using foldLeft.
+ */
