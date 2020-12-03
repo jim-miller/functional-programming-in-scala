@@ -39,8 +39,7 @@ object List {
     case _          => throw new UnsupportedOperationException
   }
 
-  /**
-    * returns a `List` consisting of all but the last element of a `List`
+  /** returns a `List` consisting of all but the last element of a `List`
     *
     * @param l `List` to process
     * @return `List` of all l items except the last
@@ -52,7 +51,7 @@ object List {
     }
 
     def reverse(as: List[A], res: List[A] = Nil): List[A] = as match {
-      case Nil => res
+      case Nil        => res
       case Cons(h, t) => reverse(t, Cons(h, res))
     }
 
@@ -60,13 +59,15 @@ object List {
   }
 
   def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = as match {
-    case Nil => zero
+    case Nil        => zero
     case Cons(h, t) => f(h, foldRight(t, zero)(f))
   }
 
   def sum2(ns: List[Int]) = foldRight(ns, 0)(_ + _)
 
   def product2(ns: List[Double]) = foldRight(ns, 1.0)(_ * _)
+
+  def length[A](as: List[A]): Int = foldRight(as, 0)((_, z) => z + 1)
 
   def apply[A](as: A*): List[A] = {
     if (as.isEmpty) Nil else Cons(as.head, List(as.tail: _*))
@@ -157,3 +158,9 @@ List.foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
 // Cons(1, Cons(2, foldRight(List(3))))
 // Cons(1, Cons(2, Cons(3, foldRight(Nil))))
 // Cons(1, Cons(2, Cons(3, Nil)))
+
+/* Exercise 3.9
+
+   Compute the length of a list using foldRight.
+ */
+List.length(List(1, 2, 3, 4, 5))
