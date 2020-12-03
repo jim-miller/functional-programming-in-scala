@@ -9,6 +9,10 @@ object List {
     foldRight(a1, a2)(Cons(_, _))
   }
 
+  def concat[A](as: List[List[A]]): List[A] = {
+    foldRight(as, Nil: List[A])(append)
+  }
+
   def tail[A](l: List[A]): List[A] = l match {
     case Cons(_, _) => drop(l, 1)
     case _          => throw new UnsupportedOperationException
@@ -223,3 +227,11 @@ List.foldRight(l, 0)(_ - _)
  */
 List.append(l, List(4, 5))
 List.append(List("a", "b", "c"), List("1", "2", "3"))
+
+/* Exercise 3.15
+ *
+ * Hard: Write a function that concatenates a list of lists into a single
+ * list. Its runtime should be linear in the total length of all lists. Try
+ * to use functions we have already defined.
+ */
+List.concat(List(List(1, 2), List(3, 4)))
