@@ -59,33 +59,20 @@ object List {
     * @param l `List` to process
     * @return `List` of all l items except the last
     */
-  def init[A](l: List[A]): List[A] = {
-    def loop(acc: List[A], remain: List[A]): List[A] = remain match {
-      case Cons(_, Nil) | Nil => acc
-      case Cons(h, t)         => loop(Cons(h, acc), t)
-    }
-
-    def reverse(as: List[A], res: List[A] = Nil): List[A] = as match {
-      case Nil        => res
-      case Cons(h, t) => reverse(t, Cons(h, res))
-    }
-
-    reverse(loop(Nil, l))
+  def init[A](l: List[A]): List[A] = l match {
+    case Cons(_, Nil) => Nil
+    case Cons(h, t)   => Cons(h, init(t))
+    case _            => throw new UnsupportedOperationException
   }
 
   def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = {
     foldLeft(reverse(as), zero)((b, a) => f(a, b))
   }
 
-  def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
-
-    @tailrec
-    def loop(as: List[A], acc: B): B = as match {
-      case Nil        => acc
-      case Cons(h, t) => loop(t, f(acc, h))
-    }
-
-    loop(as, z)
+  @tailrec
+  def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = as match {
+    case Nil        => z
+    case Cons(h, t) => foldLeft(t, f(z, h))(f)
   }
 
   def reverse[A](as: List[A]): List[A] = {
@@ -233,8 +220,8 @@ reverse(l)
 
    Yes, by reversing the list first
  */
-foldLeft(l, 0)(_ - _)
-foldRight(l, 0)(_ - _)
+assert(foldLeft(l, 0)(_ - _) == -6)
+assert(foldRight(l, 0)(_ - _) == 2)
 
 /* Exercise 3.14
 
