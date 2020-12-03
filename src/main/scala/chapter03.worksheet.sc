@@ -235,3 +235,13 @@ List.append(List("a", "b", "c"), List("1", "2", "3"))
  * to use functions we have already defined.
  */
 List.concat(List(List(1, 2), List(3, 4)))
+
+/* Exercise 3.16
+
+   Write a function that transforms a list of integers by adding 1 to each
+   element. (Reminder: this should be a pure function that returns a new List!)
+ */
+val addOneToEach = List
+  .foldRight(_: List[Int], Nil: List[Int])((a, b) => Cons(a + 1, b))
+
+addOneToEach(List(3, 4, 5))
