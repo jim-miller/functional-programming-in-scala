@@ -13,6 +13,11 @@ object List {
     foldRight(as, Nil: List[A])(append)
   }
 
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = as match {
+    case Nil        => Nil
+    case Cons(h, t) => if (f(h)) Cons(h, filter(t)(f)) else filter(t)(f)
+  }
+
   def map[A, B](as: List[A])(f: A => B): List[B] = {
     foldRight(as, Nil: List[B])((a, l) => Cons(f(a), l))
   }
@@ -269,3 +274,11 @@ doubleToString(List(3.14159, 2.71828))
  * while maintain- ing the structure of the list. Here is its signature:12
  */
 map(l)(_ / 2.0)
+
+/* Exercise 3.14159
+
+   Write a function filter that removes elements from a list unless
+   they satisfy a given predicate. Use it to remove all odd numbers
+   from a List[Int].
+ */
+filter(l)(_ % 2 != 0)
