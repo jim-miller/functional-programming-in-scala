@@ -90,6 +90,9 @@ object List {
     if (as.isEmpty) Nil else Cons(as.head, List(as.tail: _*))
   }
 }
+
+import List._
+
 /* Exercise 3.1
 
  * What will be the result of the following match expression?
@@ -112,14 +115,14 @@ val x = List(1, 2, 3, 4, 5) match {
    question in the next chapter.
  */
 val l: List[Int] = List(1, 2, 3)
-List.tail(l)
+tail(l)
 
 /* Exercise 3.3
 
    Using the same idea, implement the function setHead for replacing the first
    first element of a List with a different value.
  */
-List.setHead(2, l)
+setHead(2, l)
 
 /* Exercise 3.4
  *
@@ -128,16 +131,16 @@ List.setHead(2, l)
  * the number of elements being dropped—we don’t need to make a copy of
  * the entire List.
  */
-List.drop(l, 2)
-List.drop(l, 3)
-List.drop(l, 4)
+drop(l, 2)
+drop(l, 3)
+drop(l, 4)
 
 /* Exercise 3.5
 
    Implement dropWhile, which removes elements from the List prefix as
    long as they match a predicate.
  */
-List.dropWhile(l, (n: Int) => n <= 2)
+dropWhile(l, (n: Int) => n <= 2)
 
 /* Exercise 3.6
 
@@ -169,7 +172,7 @@ assert(List.init(List(1, 2, 3)) == List(1, 2))
    think this says about the relationship between foldRight and the data
    constructors of List?
  */
-List.foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
+foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
 
 // Cons(1, foldRight(List(2, 3)))
 // Cons(1, Cons(2, foldRight(List(3))))
@@ -180,7 +183,7 @@ List.foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
 
    Compute the length of a list using foldRight.
  */
-List.length(List(1, 2, 3, 4, 5))
+length(List(1, 2, 3, 4, 5))
 
 /* Exercise 3.10
 
@@ -192,8 +195,8 @@ List.length(List(1, 2, 3, 4, 5))
 
    def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B
  */
-List.foldLeft(l, 1)(_ * _)
-List.foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
+foldLeft(l, 1)(_ * _)
+foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
 
 /* Exercise 3.11
 
@@ -206,8 +209,8 @@ List.foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
    Write a function that returns the reverse of a list (given List(1,2,3) it
    returns List(3,2,1)). See if you can write it using a fold.
  */
-List.foldLeft(l, Nil: List[Int])((x, y) => Cons(y, x))
-List.reverse(l)
+foldLeft(l, Nil: List[Int])((x, y) => Cons(y, x))
+reverse(l)
 
 /* Exercise 3.13
 
@@ -218,15 +221,15 @@ List.reverse(l)
 
    Yes, by reversing the list first
  */
-List.foldLeft(l, 0)(_ - _)
-List.foldRight(l, 0)(_ - _)
+foldLeft(l, 0)(_ - _)
+foldRight(l, 0)(_ - _)
 
 /* Exercise 3.14
 
    Implement append in terms of either foldLeft or foldRight.
  */
-List.append(l, List(4, 5))
-List.append(List("a", "b", "c"), List("1", "2", "3"))
+append(l, List(4, 5))
+append(List("a", "b", "c"), List("1", "2", "3"))
 
 /* Exercise 3.15
  *
@@ -234,14 +237,24 @@ List.append(List("a", "b", "c"), List("1", "2", "3"))
  * list. Its runtime should be linear in the total length of all lists. Try
  * to use functions we have already defined.
  */
-List.concat(List(List(1, 2), List(3, 4)))
+concat(List(List(1, 2), List(3, 4)))
 
 /* Exercise 3.16
 
    Write a function that transforms a list of integers by adding 1 to each
    element. (Reminder: this should be a pure function that returns a new List!)
  */
-val addOneToEach = List
-  .foldRight(_: List[Int], Nil: List[Int])((a, b) => Cons(a + 1, b))
+val addOneToEach =
+  foldRight(_: List[Int], Nil: List[Int])((a, b) => Cons(a + 1, b))
 
 addOneToEach(List(3, 4, 5))
+
+/* Exercise 3.17
+
+   Write a function that turns each value in a List[Double] into a String. You
+   can use the expression d.toString to convert some d: Double to a String.
+ */
+val doubleToString =
+  foldRight(_: List[Double], Nil: List[String])((a, b) => Cons(a.toString, b))
+
+doubleToString(List(3.14159, 2.71828))
