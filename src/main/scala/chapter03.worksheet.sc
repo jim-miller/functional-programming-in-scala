@@ -55,9 +55,8 @@ object List {
     reverse(loop(Nil, l))
   }
 
-  def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = as match {
-    case Nil        => zero
-    case Cons(h, t) => f(h, foldRight(t, zero)(f))
+  def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = {
+    foldLeft(reverse(as), zero)((b, a) => f(a, b))
   }
 
   def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
@@ -203,3 +202,15 @@ List.foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
  */
 List.foldLeft(l, Nil: List[Int])((x, y) => Cons(y, x))
 List.reverse(l)
+
+/* Exercise 3.13
+
+   Hard: Can you write foldLeft in terms of foldRight? How about the other
+   way around? Implementing foldRight via foldLeft is useful because it lets
+   us implement foldRight tail-recursively, which means it works even for
+   large lists without overflow- ing the stack.
+
+   Yes, by reversing the list first
+ */
+List.foldLeft(l, 0)(_ - _)
+List.foldRight(l, 0)(_ - _)
