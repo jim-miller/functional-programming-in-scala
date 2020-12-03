@@ -39,6 +39,12 @@ object List {
     case _          => throw new UnsupportedOperationException
   }
 
+  /**
+    * returns a `List` consisting of all but the last element of a `List`
+    *
+    * @param l `List` to process
+    * @return `List` of all l items except the last
+    */
   def init[A](l: List[A]): List[A] = {
     def loop(acc: List[A], remain: List[A]): List[A] = remain match {
       case Cons(_, Nil) | Nil => acc
@@ -52,6 +58,15 @@ object List {
 
     reverse(loop(Nil, l))
   }
+
+  def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = as match {
+    case Nil => zero
+    case Cons(h, t) => f(h, foldRight(t, zero)(f))
+  }
+
+  def sum2(ns: List[Int]) = foldRight(ns, 0)(_ + _)
+
+  def product2(ns: List[Double]) = foldRight(ns, 1.0)(_ * _)
 
   def apply[A](as: A*): List[A] = {
     if (as.isEmpty) Nil else Cons(as.head, List(as.tail: _*))
@@ -90,7 +105,10 @@ List.setHead(2, l)
 
 /* Exercise 3.4
  *
- * Generalize tail to the function drop, which removes the first n elements from a list. Note that this function takes time proportional only to the number of elements being dropped—we don’t need to make a copy of the entire List.
+ * Generalize tail to the function drop, which removes the first n elements
+ * from a list. Note that this function takes time proportional only to
+ * the number of elements being dropped—we don’t need to make a copy of
+ * the entire List.
  */
 List.drop(l, 2)
 List.drop(l, 3)
@@ -111,4 +129,18 @@ List.dropWhile(l, (n: Int) => n <= 2)
    implemented in constant time like tail?
  */
 assert(List.init(List(1, 2, 3)) == List(1, 2))
+
+/* Exercise 3.7
+
+   Can product, implemented using foldRight, immediately halt the recursion
+   and return 0.0 if it encounters a 0.0? Why or why not? Consider how any
+   short-circuiting might work if you call foldRight with a large list. This
+   is a deeper question that we’ll return to in chapter 5.
+
+   No. Doing so requires another "bailout" parameter. When encountered,
+   we could
+   return Nil. E.g.
+
+     case Cons(h, t) => if (h == bailout) bailout else f(h, foldRight(...))
+ */
 
