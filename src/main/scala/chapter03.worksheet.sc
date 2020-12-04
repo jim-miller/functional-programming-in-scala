@@ -27,14 +27,18 @@ object List {
     flatMap(as)(a => if (f(a)) Cons(a, Nil) else Nil)
   }
 
-  @tailrec
-  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean =
-    (sup, sub) match {
-      case (_, Nil)                             => true
-      case (Cons(x, xs), Cons(y, ys)) if x == y => hasSubsequence(xs, ys)
-      case (Cons(x, xs), Cons(y, ys))           => hasSubsequence(xs, sub)
-      case _                                    => false
-    }
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    @tailrec
+    def loop(haystack: List[A], needle: List[A]): Boolean =
+      (haystack, needle) match {
+        case (_, Nil)                             => true
+        case (Cons(x, xs), Cons(y, ys)) if x == y => loop(xs, ys)
+        case (Cons(x, xs), Cons(y, ys))           => loop(xs, sub)
+        case _                                    => false
+      }
+
+    loop(sup, sub)
+  }
 
   def map[A, B](as: List[A])(f: A => B): List[B] = {
     foldRight(as, Nil: List[B])((a, l) => Cons(f(a), l))
@@ -366,3 +370,4 @@ hasSubsequence(List(1, 2, 3, 4), List(2, 4))
    Write a function size that counts the number of nodes (leaves and branches) in a tree
  */
 assert(Tree.size(Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))) == 5)
+
