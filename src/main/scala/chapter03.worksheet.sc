@@ -27,6 +27,15 @@ object List {
     flatMap(as)(a => if (f(a)) Cons(a, Nil) else Nil)
   }
 
+  @tailrec
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean =
+    (sup, sub) match {
+      case (_, Nil)                             => true
+      case (Cons(x, xs), Cons(y, ys)) if x == y => hasSubsequence(xs, ys)
+      case (Cons(x, xs), Cons(y, ys))           => hasSubsequence(xs, sub)
+      case _                                    => false
+    }
+
   def map[A, B](as: List[A])(f: A => B): List[B] = {
     foldRight(as, Nil: List[B])((a, l) => Cons(f(a), l))
   }
@@ -319,3 +328,20 @@ map(zip(l1, l2)) { case (l, r) => l + r }
    or addition. Name your generalized function zipWith.
  */
 zipWith(l1, l2)(_ * _)
+
+/* Exercise 3.24
+
+   Hard: As an example, implement hasSubsequence for checking whether a List
+   contains another List as a subsequence. For instance, List(1,2,3,4) would
+   have List(1,2), List(2,3), and List(4) as subsequences, among others. You
+   may have some difficulty finding a concise purely functional implementation
+   that is also efficient. That’s okay. Implement the function however comes
+   most naturally. We’ll return to this implementation in chapter 5 and
+   hopefully improve on it. Note: Any two values x and y can be compared for
+   equality in Scala using the expression x == y.
+ */
+hasSubsequence(List(1, 2, 3, 4), List(1, 2))
+hasSubsequence(List(1, 2, 3, 4), List(2, 3))
+hasSubsequence(List(1, 2, 3, 4), List(4))
+hasSubsequence(List(1, 2, 3, 4), List(7))
+hasSubsequence(List(1, 2, 3, 4), List(2, 4))
