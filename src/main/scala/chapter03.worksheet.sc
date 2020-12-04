@@ -126,6 +126,14 @@ object Tree {
     }
     loop(tree, 0)
   }
+
+  def max(tree: Tree[Int]): Int = {
+    def loop(t: Tree[Int], acc: Int): Int = t match {
+      case Branch(l, r) => max(l).max(max(r))
+      case Leaf(v)      => acc.max(v)
+    }
+    loop(tree, Int.MinValue)
+  }
 }
 
 import List._
@@ -367,7 +375,15 @@ hasSubsequence(List(1, 2, 3, 4), List(2, 4))
 
 /* Exercise 3.25
 
-   Write a function size that counts the number of nodes (leaves and branches) in a tree
+   Write a function size that counts the number of nodes (leaves and branches)
+   in a tree
  */
 assert(Tree.size(Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))) == 5)
 
+/* Exercise 3.26
+ * Write a function maximum that returns the maximum element in a Tree[Int].
+ * (Note: In Scala, you can use x.max(y) or x max y to compute the maximum of
+ * two integers x and y.)
+ */
+Tree.max(Branch(Leaf(4), Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))))
+Tree.max(Branch(Leaf(-1), Leaf(-2)))
