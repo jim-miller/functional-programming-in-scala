@@ -109,6 +109,21 @@ object List {
   }
 }
 
+trait Tree[+A]
+case class Leaf[A](value: A) extends Tree[A]
+case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
+
+object Tree {
+  def size[A](tree: Tree[A]): Int = {
+
+    def loop(t: Tree[A], acc: Int): Int = t match {
+      case Branch(l, r) => loop(l, acc + 1) + loop(r, acc)
+      case Leaf(_)      => acc + 1
+    }
+    loop(tree, 0)
+  }
+}
+
 import List._
 
 /* Exercise 3.1
@@ -345,3 +360,9 @@ hasSubsequence(List(1, 2, 3, 4), List(2, 3))
 hasSubsequence(List(1, 2, 3, 4), List(4))
 hasSubsequence(List(1, 2, 3, 4), List(7))
 hasSubsequence(List(1, 2, 3, 4), List(2, 4))
+
+/* Exercise 3.25
+
+   Write a function size that counts the number of nodes (leaves and branches) in a tree
+ */
+assert(Tree.size(Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))) == 5)
