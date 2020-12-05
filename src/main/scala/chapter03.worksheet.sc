@@ -137,7 +137,12 @@ object Tree {
 
   def depth[A](tree: Tree[A]): Int = tree match {
     case Branch(l, r) => 1 + depth(l).max(depth(r))
-    case Leaf(_) => 0
+    case Leaf(_)      => 0
+  }
+
+  def map[A, B](tree: Tree[A])(f: A => B): Tree[B] = tree match {
+    case Branch(l, r) => Branch(map(l)(f), map(r)(f))
+    case Leaf(v)      => Leaf(f(v))
   }
 }
 
@@ -398,8 +403,14 @@ Tree.max(Branch(Leaf(-1), Leaf(-2)))
    Write a function depth that returns the maximum path length from the
    root of a tree to any leaf.
  */
-Tree.depth(Branch(Branch(Leaf(1), Branch(Leaf(2), Leaf(3))), Branch(Leaf(2), Branch(Leaf(3), Leaf(4)))))
+Tree.depth(
+  Branch(
+    Branch(Leaf(1), Branch(Leaf(2), Leaf(3))),
+    Branch(Leaf(2), Branch(Leaf(3), Leaf(4)))
+  )
+)
 
+// format: off
 Tree.depth(
   Branch(Leaf(1),
     Branch(Leaf(2),
@@ -408,4 +419,14 @@ Tree.depth(
           Branch(Leaf(5),
             Branch(Leaf(6),
               Branch(Leaf(7),Leaf(6)))))))))
+// format: on
 
+/* Exercise 3.28
+
+   Write a function map, analogous to the method of the same name on List,
+   that modifies each element in a tree with a given function.
+ */
+Tree.map(Branch(Leaf(2), Leaf(3)))(_ * 2)
+Tree.map(
+  Branch(Leaf("foo"), Branch(Leaf("bar"), Branch(Leaf("baz"), Leaf("qux"))))
+)(_.toUpperCase)
