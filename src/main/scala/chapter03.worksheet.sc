@@ -134,6 +134,11 @@ object Tree {
     }
     loop(tree, Int.MinValue)
   }
+
+  def depth[A](tree: Tree[A]): Int = tree match {
+    case Branch(l, r) => 1 + depth(l).max(depth(r))
+    case Leaf(_) => 0
+  }
 }
 
 import List._
@@ -387,3 +392,20 @@ assert(Tree.size(Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))) == 5)
  */
 Tree.max(Branch(Leaf(4), Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))))
 Tree.max(Branch(Leaf(-1), Leaf(-2)))
+
+/* Exercise 3.27
+
+   Write a function depth that returns the maximum path length from the
+   root of a tree to any leaf.
+ */
+Tree.depth(Branch(Branch(Leaf(1), Branch(Leaf(2), Leaf(3))), Branch(Leaf(2), Branch(Leaf(3), Leaf(4)))))
+
+Tree.depth(
+  Branch(Leaf(1),
+    Branch(Leaf(2),
+      Branch(Leaf(3),
+        Branch(Leaf(4),
+          Branch(Leaf(5),
+            Branch(Leaf(6),
+              Branch(Leaf(7),Leaf(6)))))))))
+
