@@ -119,30 +119,30 @@ case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
 
 object Tree {
   def size[A](tree: Tree[A]): Int = {
-
-    def loop(t: Tree[A], acc: Int): Int = t match {
-      case Branch(l, r) => loop(l, acc + 1) + loop(r, acc)
-      case Leaf(_)      => acc + 1
-    }
-    loop(tree, 0)
+    fold(tree)(_ => 1)(1 + _ + _)
   }
 
   def max(tree: Tree[Int]): Int = {
-    def loop(t: Tree[Int], acc: Int): Int = t match {
-      case Branch(l, r) => max(l).max(max(r))
-      case Leaf(v)      => acc.max(v)
-    }
-    loop(tree, Int.MinValue)
+    fold(tree)(identity)(_.max(_))
   }
 
-  def depth[A](tree: Tree[A]): Int = tree match {
-    case Branch(l, r) => 1 + depth(l).max(depth(r))
-    case Leaf(_)      => 0
+  def depth[A](tree: Tree[A]): Int = {
+    fold(tree)(_ => 0)(1 + _.max(_))
+
+    // case Branch(l, r) => 1 + depth(l).max(depth(r))
+    // case Leaf(_)      => 0
   }
 
-  def map[A, B](tree: Tree[A])(f: A => B): Tree[B] = tree match {
-    case Branch(l, r) => Branch(map(l)(f), map(r)(f))
-    case Leaf(v)      => Leaf(f(v))
+  def map[A, B](tree: Tree[A])(f: A => B): Tree[B] = {
+    fold(tree)(a => Leaf(f(a)): Tree[B])(Branch(_, _))
+
+    // case Branch(l, r) => Branch(map(l)(f), map(r)(f))
+    // case Leaf(v)      => Leaf(f(v))
+  }
+
+  def fold[A, B](t: Tree[A])(f: A => B)(g: (B, B) => B): B = t match {
+    case Branch(l, r) => g(fold(l)(f)(g), fold(r)(f)(g))
+    case Leaf(v)      => f(v)
   }
 }
 
@@ -396,7 +396,7 @@ assert(Tree.size(Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))) == 5)
  * two integers x and y.)
  */
 Tree.max(Branch(Leaf(4), Branch(Leaf(1), Branch(Leaf(2), Leaf(3)))))
-Tree.max(Branch(Leaf(-1), Leaf(-2)))
+assert(Tree.max(Branch(Leaf(-1), Leaf(-2))) == -1)
 
 /* Exercise 3.27
 
@@ -430,3 +430,18 @@ Tree.map(Branch(Leaf(2), Leaf(3)))(_ * 2)
 Tree.map(
   Branch(Leaf("foo"), Branch(Leaf("bar"), Branch(Leaf("baz"), Leaf("qux"))))
 )(_.toUpperCase)
+
+/* Exercise 3.29
+
+   Generalize size, maximum, depth, and map, writing a new function fold that
+   abstracts over their similarities. Reimplement them in terms of this more
+   general function. Can you draw an analogy between this fold function and the
+   left and right folds for List?
+ */
+val t: Tree[String] =
+  Branch(
+    Branch(Leaf("meh"), Branch(Leaf("whatevs"), Leaf("blah"))),
+    Branch(Leaf("sure"), Branch(Leaf("ehh"), Leaf("jeb")))
+  )
+
+Tree.fold(t)(_.toUpperCase + "!")((l, r) => l + ", " + r)
