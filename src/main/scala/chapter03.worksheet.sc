@@ -88,8 +88,10 @@ object List {
     case _            => throw new UnsupportedOperationException
   }
 
-  def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = {
-    foldLeft(reverse(as), zero)((b, a) => f(a, b))
+  def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = as match {
+    case Cons(x, xs) => foldRight(xs, f(x, zero))(f)
+    case _ => zero
+    // foldLeft(reverse(as), zero)((b, a) => f(a, b))
   }
 
   @tailrec
