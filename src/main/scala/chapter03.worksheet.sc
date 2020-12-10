@@ -54,7 +54,7 @@ object List {
   }
 
   def drop[A](l: List[A], n: Int): List[A] = l match {
-    case Cons(h, t) => if (n > 1) drop(t, n - 1) else t
+    case Cons(h, t) => if (n >= 1) drop(t, n - 1) else l
     case _          => Nil
   }
 
@@ -188,6 +188,10 @@ setHead(2, l)
  * the number of elements being dropped—we don’t need to make a copy of
  * the entire List.
  */
+assert(drop(l, 0) == l)
+assert(drop(l, 1) == List(2, 3))
+drop(l, 0)
+drop(l, 1)
 drop(l, 2)
 drop(l, 3)
 drop(l, 4)
