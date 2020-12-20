@@ -89,7 +89,7 @@ object List {
   }
 
   def foldRight[A, B](as: List[A], zero: B)(f: (A, B) => B): B = as match {
-    case Cons(x, xs) => foldRight(xs, f(x, zero))(f)
+    case Cons(x, xs) => f(x, foldRight(xs, zero)(f))
     case _ => zero
     // foldLeft(reverse(as), zero)((b, a) => f(a, b))
   }
@@ -163,6 +163,7 @@ val x = List(1, 2, 3, 4, 5) match {
 }
 
 // 3 -- matches the third case as Cons(1, Cons(2, Cons(3, Cons(4, _))))
+assert(x == 3)
 
 /* Exercise 3.2
 
@@ -172,14 +173,16 @@ val x = List(1, 2, 3, 4, 5) match {
    question in the next chapter.
  */
 val l: List[Int] = List(1, 2, 3)
-tail(l)
+val lTail = tail(l)
+assert(lTail == List(2, 3))
 
 /* Exercise 3.3
 
    Using the same idea, implement the function setHead for replacing the first
    first element of a List with a different value.
  */
-setHead(2, l)
+val headSwap = setHead(2, l)
+assert(headSwap == List(2, 2, 3))
 
 /* Exercise 3.4
  *
@@ -196,12 +199,15 @@ drop(l, 2)
 drop(l, 3)
 drop(l, 4)
 
+assert(drop(l, 2) == List(3))
+
 /* Exercise 3.5
 
    Implement dropWhile, which removes elements from the List prefix as
    long as they match a predicate.
  */
-dropWhile(l, (n: Int) => n <= 2)
+val dropped = dropWhile(l, (n: Int) => n <= 2)
+assert(dropped == List(3))
 
 /* Exercise 3.6
 
@@ -233,18 +239,14 @@ assert(List.init(List(1, 2, 3)) == List(1, 2))
    think this says about the relationship between foldRight and the data
    constructors of List?
  */
-foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
-
-// Cons(1, foldRight(List(2, 3)))
-// Cons(1, Cons(2, foldRight(List(3))))
-// Cons(1, Cons(2, Cons(3, foldRight(Nil))))
-// Cons(1, Cons(2, Cons(3, Nil)))
+val foldedCons = foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _))
+assert(foldedCons == l)
 
 /* Exercise 3.9
 
    Compute the length of a list using foldRight.
  */
-length(List(1, 2, 3, 4, 5))
+assert(length(List(1, 2, 3, 4, 5)) == 5)
 
 /* Exercise 3.10
 
@@ -256,8 +258,17 @@ length(List(1, 2, 3, 4, 5))
 
    def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B
  */
+val f = (a: Int, b: Int) => a + b
+foldRight(l, 0)(f) // loads the call stack before computing
+
+// f(1, foldRight(List(2, 3)))
+// f(1, f(2, foldRight(List(3))))
+// f(1, f(2, f(3, foldRight(Nil))))
+// f(1, f(2, f(3, 0)))
+
 foldLeft(l, 1)(_ * _)
-foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
+val foldedLetters = foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
+assert(foldedLetters == "ABC")
 
 /* Exercise 3.11
 
@@ -271,14 +282,14 @@ foldLeft(List("a", "b", "c"), "")(_.toUpperCase + _.toUpperCase)
    returns List(3,2,1)). See if you can write it using a fold.
  */
 foldLeft(l, Nil: List[Int])((x, y) => Cons(y, x))
-reverse(l)
+assert(reverse(l) == List(3, 2, 1))
 
 /* Exercise 3.13
 
    Hard: Can you write foldLeft in terms of foldRight? How about the other
    way around? Implementing foldRight via foldLeft is useful because it lets
    us implement foldRight tail-recursively, which means it works even for
-   large lists without overflow- ing the stack.
+   large lists without overflowing the stack.
 
    Yes, by reversing the list first
  */
