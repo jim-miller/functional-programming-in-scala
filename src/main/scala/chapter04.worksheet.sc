@@ -1,0 +1,63 @@
+sealed trait Option[+A] {
+  def map[B](f: A => B): Option[B] = this match {
+    case Some(x) => Some(f(x))
+    case _       => None
+  }
+
+  def flatMap[B](f: A => Option[B]): Option[B] = {
+    map(f) getOrElse None
+  }
+
+  def getOrElse[B >: A](default: => B): B = this match {
+    case Some(x) => x
+    case _       => default
+  }
+
+  def orElse[B >: A](ob: => Option[B]): Option[B] = {
+    if (this eq None) ob else this
+  }
+
+  def filter(f: A => Boolean): Option[A] = {
+    if (map(f).getOrElse(false)) this else None
+    // flatMap(a => if (f(a)) Some(a) else None)
+  }
+}
+
+case object None extends Option[Nothing]
+case class Some[+A](value: A) extends Option[A]
+
+// format: off
+/* Exercise 4.1
+
+   Implement all of the preceding functions on Option. As you implement each
+   function, try to th8ink about what it means and in what situations you'd use
+   it. We'll explore when to use each of these functions next. Here are a few
+   hints for solving this exercise:
+
+     * It's fine to use pattern matching, though you should be able to implement
+       all the functions besides map and getOrElse without resorting to pattern
+       matching.
+     * For map and flatMap, the type signature should be enough to determine
+       the implementation.
+     * getOrElse returns the result inside the Some case of the Option, or if
+       the Option is None, returns the given default value.
+     * orElse returns the first Option if it's defined; otherwise, it returns
+       the second Option.
+ */
+// format: on
+
+val noneInt: Option[Int] = None
+val someInt: Option[Int] = Some(42)
+
+assert(noneInt.map(_ * 2) == None)
+assert(noneInt.flatMap(n => None) == None)
+assert(noneInt.getOrElse(2) == 2)
+assert(noneInt.orElse(Some(42)) == Some(42))
+assert(noneInt.filter(_ > 3) == None)
+
+assert(someInt.map(_ * 2) == Some(84))
+assert(someInt.flatMap { n: Int => Some(n + 3) } == Some(45))
+assert(someInt.getOrElse(13) == 42)
+assert(someInt.orElse(Some(3)) == Some(42))
+assert(someInt.filter(_ < 3) == None)
+assert(someInt.filter(_ > 3) == Some(42))
