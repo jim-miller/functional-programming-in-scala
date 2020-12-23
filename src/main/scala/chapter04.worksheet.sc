@@ -23,6 +23,16 @@ sealed trait Option[+A] {
   }
 }
 
+object Option {
+  def mean(xs: Seq[Double]): Option[Double] = {
+    if (xs.isEmpty) None else Some(xs.sum / xs.size)
+  }
+
+  def variance(xs: Seq[Double]): Option[Double] = {
+    mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2.0))))
+  }
+}
+
 case object None extends Option[Nothing]
 case class Some[+A](value: A) extends Option[A]
 
@@ -61,3 +71,14 @@ assert(someInt.getOrElse(13) == 42)
 assert(someInt.orElse(Some(3)) == Some(42))
 assert(someInt.filter(_ < 3) == None)
 assert(someInt.filter(_ > 3) == Some(42))
+
+/* Exercise 4.2
+
+   Implement the variance function in terms of flatMap. If the mean of a
+   sequence is m, the variance is the mean of math.pow(x - m, 2) for each
+   element x in the sequence. See the definition of vairance on Wikipedia.
+
+     def variance(xs: Seq[Double]): Option[Double]
+ */
+val vRes = Option.variance(Seq(2.0, 4.0, 6.0, 8.0, 10.0))
+assert(vRes == Some(8.0))

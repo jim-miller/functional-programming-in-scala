@@ -9,3 +9,6 @@ project/plugins/project/
 .lib/vscode/
 .bsp
 project/project/metals.sbt
+.bloop/
+.metals/
+project/metals.sbt
