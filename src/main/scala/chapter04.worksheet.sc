@@ -31,6 +31,15 @@ object Option {
   def variance(xs: Seq[Double]): Option[Double] = {
     mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2.0))))
   }
+
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
+    for {
+      x <- a
+      y <- b
+    } yield f(x, y)
+    // a.flatMap(x => b.map(y => f(x, y))) // Manually calling fMap/map
+  }
+
 }
 
 case object None extends Option[Nothing]
@@ -82,3 +91,18 @@ assert(someInt.filter(_ > 3) == Some(42))
  */
 val vRes = Option.variance(Seq(2.0, 4.0, 6.0, 8.0, 10.0))
 assert(vRes == Some(8.0))
+
+/* Exercise 4.3
+
+   Write a generic function map2 that combines two Option values using a binary
+   function. If either Option value is None, then the return value is too. Here
+   is the signature:
+
+     def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C]
+ */
+val f = (n: Int, s: String) => s"$n is $s"
+assert(Option.map2(Some(2), None)(f) == None)
+
+val map2Res = Option.map2(Some(42), Some("the answer"))(f)
+assert(map2Res == Some("42 is the answer"))
+
