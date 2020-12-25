@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 sealed trait Option[+A] {
   def map[B](f: A => B): Option[B] = this match {
     case Some(x) => Some(f(x))
@@ -40,6 +41,18 @@ object Option {
     // a.flatMap(x => b.map(y => f(x, y))) // Manually calling fMap/map
   }
 
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = {
+    @tailrec
+    def loop(xs: List[Option[A]], acc: List[A]): Option[List[A]] = xs match {
+      case Nil          => Some(acc)
+      case None :: _    => None
+      case Some(x) :: t => loop(t, acc :+ x)
+    }
+
+    loop(a, List.empty)
+
+    // a.foldRight(Some(Nil): Option[List[A]])((x, y) => map2(x, y)(_ :: _))
+  }
 }
 
 case object None extends Option[Nothing]
@@ -105,4 +118,20 @@ assert(Option.map2(Some(2), None)(f) == None)
 
 val map2Res = Option.map2(Some(42), Some("the answer"))(f)
 assert(map2Res == Some("42 is the answer"))
+
+/* Exercise 4.4
+
+    Write a function sequence that combines a list of Options into one Option
+    containing a list of all the values in the original list. If the original
+    list contains None even once, the result of the function should be None
+    otherwise the result should be Some with a list of all the values. Here
+    is its signature:
+
+      def sequence[A](a: List[Option[A]]): Option[List[A]]}
+ */
+val optSeqResA = Option.sequence(List(None, Some(2), Some(3), None))
+val optSeqResB = Option.sequence(List(Some(1), Some(2), Some(3)))
+
+assert(optSeqResA == None)
+assert(optSeqResB == Some(List(1, 2, 3)))
 
