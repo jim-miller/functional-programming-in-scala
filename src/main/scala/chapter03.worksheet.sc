@@ -428,7 +428,8 @@ Tree.depth(
 )
 
 // format: off
-Tree.depth(
+
+val tRes = Tree.depth(
   Branch(Leaf(1),
     Branch(Leaf(2),
       Branch(Leaf(3),
@@ -437,6 +438,7 @@ Tree.depth(
             Branch(Leaf(6),
               Branch(Leaf(7),Leaf(6)))))))))
 // format: on
+assert(tRes == 7)
 
 /* Exercise 3.28
 
