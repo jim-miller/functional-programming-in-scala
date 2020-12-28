@@ -42,20 +42,25 @@ object Option {
   }
 
   def sequence[A](a: List[Option[A]]): Option[List[A]] = {
-    @tailrec
-    def loop(xs: List[Option[A]], acc: List[A]): Option[List[A]] = xs match {
-      case Nil          => Some(acc)
-      case None :: _    => None
-      case Some(x) :: t => loop(t, acc :+ x)
-    }
+    traverse(a)(identity)
 
-    loop(a, List.empty)
+    // @tailrec
+    // def loop(xs: List[Option[A]], acc: List[A]): Option[List[A]] = xs match {
+    //   case Nil          => Some(acc)
+    //   case None :: _    => None
+    //   case Some(x) :: t => loop(t, acc :+ x)
+    // }
+    // loop(a, List.empty)
 
     // a.foldRight(Some(Nil): Option[List[A]])((x, y) => map2(x, y)(_ :: _))
   }
+
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = {
+    a.foldRight(Some(Nil): Option[List[B]])((x, z) => map2(f(x), z)(_ :: _))
+  }
 }
 
-case object None extends Option[Nothing]
+case object None              extends Option[Nothing]
 case class Some[+A](value: A) extends Option[A]
 
 // format: off
@@ -131,7 +136,32 @@ assert(map2Res == Some("42 is the answer"))
  */
 val optSeqResA = Option.sequence(List(None, Some(2), Some(3), None))
 val optSeqResB = Option.sequence(List(Some(1), Some(2), Some(3)))
+val emptySeq   = Option.sequence(Nil: List[Option[Int]])
 
 assert(optSeqResA == None)
 assert(optSeqResB == Some(List(1, 2, 3)))
+assert(emptySeq == Some(Nil))
 
+/* Exercise 4.5
+
+   Implement this function (traverse). It's straightforward to do using map and
+   sequence, but try for a more efficient implementation that only looks at the
+   list once. In fact, implement sequence in terms of traverse.
+
+     def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]]
+ */
+val listOfInts  = List(1, 2, 3)
+val intToDouble = (n: Int) => Some(n.toDouble)
+
+// straightforward, less efficient
+val traverseAsSeqenceMap = Option.sequence(listOfInts.map(n => intToDouble(n)))
+val traverseRes          = Option.traverse(listOfInts)(intToDouble)
+assert(traverseRes == traverseAsSeqenceMap)
+
+import scala.util.{Failure, Success, Try}
+val divLifeBy: Int => Option[Int] = n =>
+  Try(42 / n) match {
+    case Success(d) => Some(d)
+    case _          => None
+  }
+assert(Option.traverse(List(100, 0))(divLifeBy) == None)
