@@ -83,7 +83,7 @@ sealed trait Either[+E, +A] {
       case _            => b
     }
 
-  def map2[EE >: E, B >: A, C](b: Either[EE, B])(f: (A, B) => C): Either[EE, C] = {
+  def map2[EE >: E, B, C](b: Either[EE, B])(f: (A, B) => C): Either[EE, C] = {
     this.flatMap(a => b.map(b => f(a, b)))
       // (this, b) match {
       //   case (x: Left[E], _) => x
@@ -92,6 +92,15 @@ sealed trait Either[+E, +A] {
       // }
     }
 }
+
+object Either {
+  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = traverse(es)(identity)
+
+  def traverse[E, A, B](as: List[A])(f: A => Either[E, B]): Either[E, List[B]] = {
+    as.foldRight[Either[E, List[B]]](Right(Nil))((a, z) => f(a).map2(z)(_ :: _))
+  }
+}
+
 case class Left[+E](value: E)  extends Either[E, Nothing]
 case class Right[+A](value: A) extends Either[Nothing, A]
 
@@ -219,3 +228,19 @@ assert(aEither.map2(bEither)(aPlusB) == Right("Ints: 2, 3"))
 // map2 is a for comprehension akk sequence of map/flatMap operations
 aEither.flatMap(a => bEither.map(b => aPlusB(a, b)))
 aEither.map2(Left("foo"))(aPlusB)
+
+/* Exercise 4.7
+
+   Implement sequence and traverse for Either. These should return the first
+   error that's encountered, if there is one.
+*/
+val eList: Either[String, List[Int]] = Either.sequence(List(Right(1), Right(2), Right(3)))
+val eListError = Either.sequence(List(Left("foo"), Right(6), Left("bar")))
+val eStrInt = Either.traverse(List(1, 2, 3))(n => if (n > 1) Left("error") else Right(n + 1))
+val eStrBool = Either.traverse(List(1, 2, 3))(n => Right(n % 2 == 0): Either[String, Boolean])
+
+assert(eList == Right(List(1, 2, 3)))
+assert(eListError == Left("foo"))
+assert(eStrInt == Left("error"))
+assert(eStrBool == Right(List(false, true, false)))
+
