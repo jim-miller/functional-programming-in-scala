@@ -244,3 +244,18 @@ assert(eListError == Left("foo"))
 assert(eStrInt == Left("error"))
 assert(eStrBool == Right(List(false, true, false)))
 
+/* Exercise 4.8
+
+   In this implementation, map2 is only able to report one error, even if both
+   the name and the age are invalid. What would you need to change in order to
+   report bother errors? Would you change map2 or the signature of mkPerson? Or
+   could you create a new type that captures this requirement better than
+   Either does, with some additional structure? How would orElse, traverse,
+   and sequence behave differently for that data type?
+
+   map2 relies on sequential operations (flatMap/for) and has a data type that
+   only holds a single error value. You would need a new data type (i.e non-empty
+   list/chain). Flatmapping over a left value would have to be replaced with a
+   function that appended that list of erorrs rather than returning itself when
+   using functions like sequence/traverse.
+*/
