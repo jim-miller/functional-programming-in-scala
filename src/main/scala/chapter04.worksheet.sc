@@ -1,4 +1,6 @@
 import scala.annotation.tailrec
+import scala.{Option => _, Either => _}
+
 sealed trait Option[+A] {
   def map[B](f: A => B): Option[B] = this match {
     case Some(x) => Some(f(x))
@@ -59,9 +61,39 @@ object Option {
     a.foldRight(Some(Nil): Option[List[B]])((x, z) => map2(f(x), z)(_ :: _))
   }
 }
-
 case object None              extends Option[Nothing]
 case class Some[+A](value: A) extends Option[A]
+
+sealed trait Either[+E, +A] {
+  def map[B](f: A => B): Either[E, B] =
+    this match {
+      case Right(a)    => Right(f(a))
+      case e @ Left(_) => e
+    }
+
+  def flatMap[EE >: E, B](f: A => Either[EE, B]): Either[EE, B] =
+    this match {
+      case Right(a)    => f(a)
+      case e @ Left(_) => e
+    }
+
+  def orElse[EE >: E, B >: A](b: => Either[EE, B]): Either[EE, B] =
+    this match {
+      case r @ Right(_) => r
+      case _            => b
+    }
+
+  def map2[EE >: E, B >: A, C](b: Either[EE, B])(f: (A, B) => C): Either[EE, C] = {
+    this.flatMap(a => b.map(b => f(a, b)))
+      // (this, b) match {
+      //   case (x: Left[E], _) => x
+      //   case (_, y: Left[E]) => y
+      //   case (Right(a), Right(b)) => Right(f(a, b))
+      // }
+    }
+}
+case class Left[+E](value: E)  extends Either[E, Nothing]
+case class Right[+A](value: A) extends Either[Nothing, A]
 
 // format: off
 /* Exercise 4.1
@@ -165,3 +197,25 @@ val divLifeBy: Int => Option[Int] = n =>
     case _          => None
   }
 assert(Option.traverse(List(100, 0))(divLifeBy) == None)
+
+/* Exercise 4.6
+
+   Implement versions of map, flatMap, orElse, and map2 on Either
+   that operate on the Right value
+ */
+val times3 = (n: Int) => n * 3
+assert(Right(2).map(times3) == Right(6))
+assert(Left("foobar").map(times3) == Left("foobar"))
+
+assert(Right(3).flatMap(times3.andThen(Right(_))) == Right(9))
+
+assert(Right(42).orElse(Right(0)) == Right(42))
+assert(Left("foo").orElse(Right(6)) == Right(6))
+
+val aPlusB = (a: Int, b: Int) => s"Ints: $a, $b"
+val aEither: Either[String, Int] = Right(2)
+val bEither: Either[String, Int] = Right(3)
+assert(aEither.map2(bEither)(aPlusB) == Right("Ints: 2, 3"))
+// map2 is a for comprehension akk sequence of map/flatMap operations
+aEither.flatMap(a => bEither.map(b => aPlusB(a, b)))
+aEither.map2(Left("foo"))(aPlusB)
